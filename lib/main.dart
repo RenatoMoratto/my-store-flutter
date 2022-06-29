@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/pages/products_overview_page.dart';
 import 'package:shop/utils/app_routes.dart';
 
+import 'models/cart.dart';
 import 'models/product_list.dart';
 import 'pages/product_details_page.dart';
 
@@ -16,8 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = ThemeData(fontFamily: 'Lato');
-    return ChangeNotifierProvider(
-      create: (_) => ProductList(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductList()),
+        ChangeNotifierProvider(create: (_) => Cart()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: theme.copyWith(
