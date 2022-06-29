@@ -17,7 +17,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = ThemeData(fontFamily: 'Lato');
+    final ThemeData theme = ThemeData(
+      fontFamily: 'Lato',
+      primarySwatch: Colors.purple,
+    );
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProductList()),
@@ -27,7 +31,6 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: theme.copyWith(
           colorScheme: theme.colorScheme.copyWith(
-            primary: Colors.purple,
             secondary: Colors.deepOrange,
           ),
         ),
