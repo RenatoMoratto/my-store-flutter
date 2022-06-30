@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../models/product.dart';
+import '../models/product_list.dart';
 
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({Key? key}) : super(key: key);
@@ -16,7 +15,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
   final _imageUrlController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final _formData = Map<String, Object>();
+  final _formData = <String, Object>{};
 
   @override
   void initState() {
@@ -54,13 +53,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
 
     _formKey.currentState?.save();
 
-    final newProduct = Product(
-      id: Random().nextDouble().toString(),
-      name: _formData['name'] as String,
-      description: _formData['description'] as String,
-      price: _formData['price'] as double,
-      imageUrl: _formData['imageUrl'] as String,
-    );
+    Provider.of<ProductList>(
+      context,
+      listen: false,
+    ).addProductFromData(_formData);
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -85,10 +83,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 decoration: const InputDecoration(labelText: 'Nome'),
                 textInputAction: TextInputAction.next,
                 onSaved: (name) => _formData['name'] = name ?? '',
-                validator: (_name) {
-                  final name = _name ?? '';
-
-                  if (name.trim().isEmpty) {
+                validator: (name) {
+                  if (name!.trim().isEmpty) {
                     return 'Nome é obrigatório!';
                   }
                   if (name.trim().length < 3) {
@@ -106,9 +102,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 ),
                 onSaved: (price) =>
                     _formData['price'] = double.parse(price ?? ''),
-                validator: (_price) {
-                  final priceString = _price ?? '';
-                  final price = double.tryParse(priceString) ?? -1;
+                validator: (priceString) {
+                  final price = double.tryParse(priceString!) ?? -1;
 
                   if (price <= 0) {
                     return 'Informe um preço válido!';
@@ -121,12 +116,10 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 decoration: const InputDecoration(labelText: 'Descrição'),
                 keyboardType: TextInputType.multiline,
                 maxLines: 3,
-                onSaved: (descrition) =>
-                    _formData['descrition'] = descrition ?? '',
-                validator: (_description) {
-                  final description = _description ?? '';
-
-                  if (description.trim().isEmpty) {
+                onSaved: (description) =>
+                    _formData['description'] = description ?? '',
+                validator: (description) {
+                  if (description!.trim().isEmpty) {
                     return 'Descrição é obrigatório!';
                   }
                   if (description.trim().length < 10) {
@@ -151,10 +144,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       onSaved: (imageUrl) =>
                           _formData['imageUrl'] = imageUrl ?? '',
                       onFieldSubmitted: (_) => _submitForm(),
-                      validator: (_imageUrl) {
-                        final imageUrl = _imageUrl ?? '';
-
-                        if (!isValidImageUrl(imageUrl)) {
+                      validator: (imageUrl) {
+                        if (!isValidImageUrl(imageUrl!)) {
                           return 'Informe uma Url válida!';
                         }
 
