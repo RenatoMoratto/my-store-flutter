@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 
 import '../data/dummy_data.dart';
@@ -7,6 +9,8 @@ import 'product.dart';
 
 class ProductList with ChangeNotifier {
   final List<Product> _items = dummyProducts;
+  final String _baseUrl =
+      'https://my-store-flutter-default-rtdb.firebaseio.com';
 
   List<Product> get items => [..._items];
 
@@ -34,8 +38,30 @@ class ProductList with ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    _items.add(product);
-    notifyListeners();
+    final future = http.post(
+      Uri.parse('$_baseUrl/products.json'),
+      body: jsonEncode(
+        {
+          "name": product.name,
+          "description": product.description,
+          "price": product.price,
+          "imageUrl": product.imageUrl,
+          "isFavorite": product.isFavorite,
+        },
+      ),
+    );
+
+    future.then((response) {
+      final id = jsonDecode(response.body)['name'];
+      _items.add(Product(
+        id: id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      ));
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {
