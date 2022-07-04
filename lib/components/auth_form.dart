@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/auth.dart';
 
 enum AuthMode { signup, login }
 
@@ -34,8 +37,27 @@ class _AuthFormState extends State<AuthForm> {
     });
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    final isValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isValid) {
+      return;
+    }
+
     setState(() => _isLoading = true);
+
+    _formKey.currentState?.save();
+    Auth auth = Provider.of<Auth>(context, listen: false);
+
+    if (_isLogin()) {
+    } else {
+      await auth.signup(
+        _authData['email']!,
+        _authData['password']!,
+      );
+    }
+
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -61,8 +83,8 @@ class _AuthFormState extends State<AuthForm> {
                 onSaved: (email) => _authData['email'] = email ?? '',
                 validator: (email_) {
                   final email = email_ ?? '';
-                  if (email.trim().isEmpty || email.contains('@')) {
-                    return 'Informe um email válida.';
+                  if (email.trim().isEmpty || !email.contains('@')) {
+                    return 'Informe um email válido.';
                   }
                   return null;
                 },
