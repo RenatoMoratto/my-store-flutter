@@ -12,7 +12,7 @@ class ProductGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context, listen: false);
+    final product = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
     final msg = ScaffoldMessenger.of(context);
     final auth = Provider.of<Auth>(context, listen: false);
@@ -25,7 +25,10 @@ class ProductGridItem extends StatelessWidget {
           leading: IconButton(
             onPressed: () async {
               try {
-                await product.toggleFavorite(auth.token ?? '');
+                await product.toggleFavorite(
+                  auth.token ?? '',
+                  auth.userId ?? '',
+                );
               } on HttpException catch (error) {
                 msg.showSnackBar(
                   SnackBar(
