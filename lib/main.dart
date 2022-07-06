@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'utils/custom_route.dart';
 import 'utils/app_routes.dart';
 import 'models/cart.dart';
 import 'models/auth.dart';
@@ -25,6 +26,12 @@ class MyApp extends StatelessWidget {
     final ThemeData theme = ThemeData(
       fontFamily: 'Lato',
       primarySwatch: Colors.purple,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.iOS: CustomPageTransitionBuilder(),
+          TargetPlatform.android: CustomPageTransitionBuilder(),
+        },
+      ),
     );
 
     return MultiProvider(
